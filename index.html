@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><script>window.PASO_CONFIG=Object.assign(window.PASO_CONFIG||{},{"feedbackReplyTo": "trang.nguyenha1997@gmail.com", "feedbackUrl": "https://formspree.io/f/mqppyogo"});</script><script>(function () {
+<!DOCTYPE html><html lang="en"><head><script>window.PASO_CONFIG=Object.assign(window.PASO_CONFIG||{},{"feedbackReplyTo": "trang.nguyenha1997@gmail.com", "feedbackUrl": "https://formspree.io/f/mqppyogo", "feedbackUrl2": "https://formsubmit.co/ajax/trang.nguyenha1997@gmail.com"});</script><script>(function () {
   var errs = [];
   window.addEventListener("error", function (e) { errs.push(String(e.message || e.error || "error")); });
   window.addEventListener("unhandledrejection", function (e) { errs.push(String(e.reason || "rejection")); });
@@ -1344,6 +1344,7 @@ react/cjs/react-jsx-runtime.production.js:
     "#pfb-head{position:sticky;top:0;background:#0F1B2D;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;z-index:2}" +
     "#pfb-head h2{margin:0;font-size:17px;font-weight:700}#pfb-close{background:#F5B800;color:#0F1B2D;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:16px;cursor:pointer;min-height:48px}" +
     "#pfb .sec{padding:18px 16px 4px}#pfb h3{margin:0 0 4px;font-size:17px;font-weight:700}#pfb .hint{color:#465366;font-size:13px;margin:0 0 10px}" +
+    "#pfb .chose{margin:4px 0 0;font-weight:700;font-size:14px;color:#1F7A5A}#pfb .chose.no{color:#B3261E}" +
     "#pfb .q{margin:14px 0 6px;font-weight:700;font-size:14px}#pfb .card{background:#fff;border:1px solid #D9DDD6;border-radius:10px;padding:12px;margin:10px 0}" +
     "#pfb .opts{display:flex;flex-wrap:wrap;gap:6px}#pfb .opts label{position:relative}" +
     "#pfb .opts input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}" +
@@ -1365,7 +1366,7 @@ react/cjs/react-jsx-runtime.production.js:
   }
   function scale(path, from, to, lo, hi) {
     var o = []; for (var i = from; i <= to; i++) o.push(String(i));
-    return radios(path, o) + '<div class="ends"><span>' + lo + "</span><span>" + hi + "</span></div>";
+    return radios(path, o) + '<div class="ends"><span>' + lo + "</span><span>" + hi + '</span></div><p class="chose" data-for="' + path + '" data-max="' + to + '" aria-live="polite"></p>';
   }
   function area(path, ph) { return '<textarea data-k="' + path + '" placeholder="' + esc(ph || "") + '" aria-label="' + esc(ph || path) + '"></textarea>'; }
 
@@ -1448,10 +1449,13 @@ react/cjs/react-jsx-runtime.production.js:
     }); progress();
   }
   function progress() {
+    try { chose(); } catch (e) {}
     var n = KEYS.filter(function (k) { var v = getP(S.v, k); return v != null && String(v).trim() !== ""; }).length;
     root.querySelector("#pfb-bar").style.width = Math.round(100 * n / KEYS.length) + "%"; if (typeof refreshNext === "function" && root.querySelector("#pfb-next")) refreshNext(); return n;
   }
   root.addEventListener("input", function (e) { var el = e.target; if (!el.dataset || !el.dataset.k || el.type === "radio") return; setP(S.v, el.dataset.k, el.value); save(); progress(); });
+  function chose() { root.querySelectorAll(".chose").forEach(function (c) { var v = getP(S.v, c.dataset.for); c.className = "chose"; c.textContent = v == null || v === "" ? "" : "You chose " + v + " out of " + c.dataset.max; }); }
+  root.addEventListener("change", function () { chose(); });
   root.addEventListener("change", function (e) { var el = e.target; if (!el.dataset || !el.dataset.k || el.type !== "radio") return; setP(S.v, el.dataset.k, el.value); save(); progress(); });
   restore();
 
@@ -1460,17 +1464,38 @@ react/cjs/react-jsx-runtime.production.js:
   function asText(p) {
     var a = p.answers, L = ["PASO feedback " + p.id.slice(0, 8), ""], g = function (k) { var v = getP(a, k); return v == null || v === "" ? "-" : v; };
     L.push("Age: " + g("about.age") + " | Trips: " + g("about.trips") + " | Habit: " + g("about.habit"));
-    TASKS.forEach(function (t, i) { L.push("Task " + (i + 1) + " " + t.title + ": " + g("tasks." + t.id + ".status") + ", ease " + g("tasks." + t.id + ".ease") + ", note: " + g("tasks." + t.id + ".note")); });
-    L.push("Helped (1-5): " + g("r.help"), "Follow route: " + g("r.follow"), "Distrust because: " + g("r.trust"), "Plan or build: " + g("r.style"), "Recommend (0-10): " + g("r.nps"), "Pay: " + g("r.pay") + " " + g("r.payNote"),
+    TASKS.forEach(function (t, i) { L.push("Task " + (i + 1) + " " + t.title + ": " + g("tasks." + t.id + ".status") + ", EASE RATING: " + (getP(a, "tasks." + t.id + ".ease") ? getP(a, "tasks." + t.id + ".ease") + " out of 5" : "NOT RATED") + ", note: " + g("tasks." + t.id + ".note")); });
+    L.push("Helped (1-5): " + g("r.help") + " out of 5", "Follow route: " + g("r.follow"), "Distrust because: " + g("r.trust"), "Plan or build: " + g("r.style"), "Recommend (0-10): " + g("r.nps") + " out of 10", "Pay: " + g("r.pay") + " " + g("r.payNote"),
       "Confusing: " + g("t.confusing"), "Missing: " + g("t.missing"), "Liked: " + g("t.liked"), "Contact: " + g("about.contact"));
     (a.routeFeedback || []).forEach(function (e, i) { L.push("Route feedback " + (i + 1) + ": " + (e.title || "") + " (" + (e.city || "") + ") " + (e.rating || "-") + "/5; issues: " + ((e.issues || []).join(", ") || "-") + "; " + (e.comment || "-") + "; adjustments tried: " + ((e.adjustments || []).join(" / ") || "-")); });
     return L.join("\n");
   }
   function withTimeout(p, ms) { return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error("timeout")); }, ms); })]); }
+  var STATUS = { done: "Did it", trouble: "Did it, but it was hard", failed: "Could not do it", skipped: "Skipped" };
+  function flat(p) {
+    var a = p.answers, o = {}, g = function (k) { var v = getP(a, k); return v == null || v === "" ? "(no answer)" : String(v); }, n = 0;
+    function put(label, v) { n++; o[(n < 10 ? "0" : "") + n + " " + label] = v; }
+    put("Age group", g("about.age")); put("Trips in last 2 years", g("about.trips")); put("How they plan trips", g("about.habit"));
+    TASKS.forEach(function (t, i) {
+      var st = getP(a, "tasks." + t.id + ".status"), e = getP(a, "tasks." + t.id + ".ease");
+      put("Task " + (i + 1) + " " + t.title + ": result", st ? STATUS[st] || st : "(no answer)");
+      put("Task " + (i + 1) + " " + t.title + ": ease (1-5)", e ? e + " out of 5" : "NOT RATED");
+      put("Task " + (i + 1) + " " + t.title + ": where they got stuck", g("tasks." + t.id + ".note"));
+    });
+    put("Helped on last trip (1-5)", g("r.help")); put("Would follow the route", g("r.follow")); put("What would stop them trusting it", g("r.trust"));
+    put("Finished plan or build own", g("r.style")); put("Recommend to a friend (0-10)", g("r.nps")); put("Would pay", g("r.pay")); put("What they would pay for", g("r.payNote"));
+    put("Confusing or annoying", g("t.confusing")); put("Missing", g("t.missing")); put("Liked best", g("t.liked")); put("Contact", g("about.contact"));
+    (a.routeFeedback || []).forEach(function (e, i) { put("Route feedback " + (i + 1), (e.title || "") + " (" + (e.city || "") + "), " + (e.rating || "-") + "/5; issues: " + ((e.issues || []).join(", ") || "-") + "; " + (e.comment || "-") + "; adjustments: " + ((e.adjustments || []).join(" / ") || "-")); });
+    return o;
+  }
   async function deliver(p) {
-    if (CFG.feedbackUrl) { // any form service that accepts a JSON POST (Formspree, Web3Forms, a Google Apps Script URL, ...)
-      var f = await withTimeout(fetch(CFG.feedbackUrl, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(Object.assign({ message: asText(p) }, p)) }), 12000);
-      if (!f.ok) throw new Error("HTTP " + f.status); return "form";
+    if (CFG.feedbackUrl || CFG.feedbackUrl2) { // one or two form services; success if either accepts it
+      var jobs = [];
+      if (CFG.feedbackUrl) jobs.push(withTimeout(fetch(CFG.feedbackUrl, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(Object.assign({ _subject: "PASO feedback " + p.id.slice(0, 8) }, flat(p), { id: p.id, message: asText(p) })) }), 12000).then(function (f) { if (!f.ok) throw new Error("HTTP " + f.status); return true; }));
+      if (CFG.feedbackUrl2) jobs.push(withTimeout(fetch(CFG.feedbackUrl2, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(Object.assign({ _subject: "PASO feedback " + p.id.slice(0, 8), _captcha: "false", _template: "table" }, flat(p))) }), 12000).then(function (f) { if (!f.ok) throw new Error("HTTP " + f.status); return true; }));
+      var res = await Promise.allSettled(jobs);
+      if (!res.some(function (r) { return r.status === "fulfilled"; })) throw new Error("form services failed");
+      return "form";
     }
     if (CFG.feedbackApi != null) { // own server
       var r = await withTimeout(fetch(String(CFG.feedbackApi).replace(/\/$/, "") + "/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) }), 10000);
@@ -1491,6 +1516,8 @@ react/cjs/react-jsx-runtime.production.js:
   var sending = false;
   root.querySelector("#pfb-send").onclick = async function () {
     if (sending) return; var msg = root.querySelector("#pfb-msg");
+    var miss = TASKS.filter(function (t, i) { return getP(S.v, "tasks." + t.id + ".status") && !getP(S.v, "tasks." + t.id + ".ease"); });
+    if (miss.length && !S.nudged) { S.nudged = true; save(); msg.innerHTML = '<span class="bad">One more thing: you did not say how easy ' + (miss.length > 1 ? "these tasks were" : "this task was") + ": " + miss.map(function (t) { return esc(t.title); }).join(", ") + '. Tap a number from 1 to 5 under "How easy was it?", then tap Send again. Or tap Send again now to send without it.</span>'; try { root.querySelector("#pfb-s-" + miss[0].id).scrollIntoView({ block: "start" }); } catch (e) {} return; }
     if (progress() === 0 && !(S.v.routeFeedback || []).length) { msg.innerHTML = '<span class="bad">Answer at least one question first.</span>'; return; }
     sending = true; this.disabled = true; msg.textContent = "Sending...";
     var p = payload(), how = null;
