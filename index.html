@@ -1316,11 +1316,11 @@ react/cjs/react-jsx-runtime.production.js:
   var REPLY_TO = CFG.feedbackReplyTo || ""; // shown as "send your answers to ..." when automatic sending is not possible
   var LS = "paso-fb-draft-v1";
   var TASKS = [
-    { id: "t1", title: "Plan a quick walk", say: "You just landed in Lisbon with about 3 hours free. Use the app to plan something." },
-    { id: "t2", title: "Plan two days", say: "You have 2 days in Kyoto, love food and history, and want to walk about 2 hours a day. Make that plan using the search." },
-    { id: "t3", title: "Check out a stop", say: "Open the second stop on a route. What is it, how long would you spend there, and would you go?" },
-    { id: "t4", title: "Pretend to walk it", say: "You don't need to actually walk. Pretend you're out walking this route: start the walk, then tap the arrived button as if you had reached each stop (two or three is enough). Find where it shows how far you have walked so far. Finally, pretend you are tired and want to stop early: end the route." },
-    { id: "t5", title: "Tickets and community", say: "Find where you would book a ticket for something on your route. Then find what other walkers recommend." }
+    { id: "t1", title: "Plan a quick walk", say: "You just landed in Lisbon and have about 3 hours free. Plan a walk." },
+    { id: "t2", title: "Plan two days", say: "You have 2 days in Kyoto. You love food and history. Plan 2 days with about 2 hours of walking each day." },
+    { id: "t3", title: "Check out a stop", say: "Open the second stop on a route. What is it, and would you go?" },
+    { id: "t4", title: "Pretend to walk it", say: "You do not need to really walk. Start the walk, tap the arrived button at two stops, then end the route early." },
+    { id: "t5", title: "Tickets and community", say: "Find where you would book a ticket. Then find what other walkers recommend." }
   ];
   function uid() { try { return crypto.randomUUID(); } catch (e) { return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); } }
   var S = { id: uid(), startedAt: Date.now(), v: {} }, sent = false;
@@ -1343,7 +1343,8 @@ react/cjs/react-jsx-runtime.production.js:
     "#pfb-panel.open{transform:none}@media (prefers-reduced-motion:reduce){#pfb-panel{transition:none}}" +
     "#pfb-head{position:sticky;top:0;background:#0F1B2D;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;z-index:2}" +
     "#pfb-head h2{margin:0;font-size:17px;font-weight:700}#pfb-close{background:#F5B800;color:#0F1B2D;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:16px;cursor:pointer;min-height:48px}" +
-    "#pfb .sec{padding:18px 16px 4px}#pfb h3{margin:0 0 4px;font-size:17px;font-weight:700}#pfb .hint{color:#465366;font-size:13px;margin:0 0 10px}" +
+    "#pfb .sec{padding:18px 16px 4px}#pfb h3{margin:0 0 4px;font-size:17px;font-weight:700}#pfb .hint{color:#465366;font-size:15px;margin:0 0 10px}" +
+    "#pfb .intro{font-size:16px;line-height:1.5;margin:0 0 10px;color:#0F1B2D}#pfb .parts{list-style:decimal;margin:0 0 10px;padding-left:28px;font-size:16px;font-weight:700}#pfb .parts li{margin:4px 0}#pfb .todo{background:#FFF6D6;border-left:5px solid #F5B800;border-radius:6px;padding:10px 12px;margin:8px 0 4px;font-size:16px;line-height:1.45}#pfb .opt{font-weight:400;color:#465366}" +
     "#pfb .chose{margin:4px 0 0;font-weight:700;font-size:14px;color:#1F7A5A}#pfb .chose.no{color:#B3261E}" +
     "#pfb .q{margin:14px 0 6px;font-weight:700;font-size:14px}#pfb .card{background:#fff;border:1px solid #D9DDD6;border-radius:10px;padding:12px;margin:10px 0}" +
     "#pfb .opts{display:flex;flex-wrap:wrap;gap:6px}#pfb .opts label{position:relative}" +
@@ -1372,20 +1373,20 @@ react/cjs/react-jsx-runtime.production.js:
 
   function formHtml() {
     var h = '<div class="prog" aria-hidden="true"><i id="pfb-bar" style="width:0"></i></div><div id="pfb-next" aria-live="polite"></div>';
-    h += '<div class="sec"><h3>Thanks for trying PASO</h3><p class="hint">PASO plans walking routes through a city. This is an early version, so it will have rough edges. You cannot break it, and honest answers help most. Takes about 10 to 15 minutes. Some places and photos are samples, and Google ratings and opening hours are not connected yet.</p></div>';
-    h += '<div class="sec" id="pfb-s-about"><h3>About you</h3>';
+    h += '<div class="sec"><h3>Thanks for trying PASO</h3><p class="intro">PASO plans walking routes in a city. This is an early version. You cannot break it, and there are no wrong answers. It takes about 10 minutes.</p><ol class="parts"><li>About you</li><li>Five small tasks in the app</li><li>What you think</li></ol><p class="intro">On a computer, the app is on the left and these questions are on the right. On a phone, use the yellow tab on the right edge to switch.</p></div>';
+    h += '<div class="sec" id="pfb-s-about"><h3>Part 1: About you</h3>';
     h += '<p class="q" id="q-age">Your age group</p>' + radios("about.age", ["Under 20", "20 to 39", "40 to 54", "55 to 70", "Over 70"]);
     h += '<p class="q">Trips to a new city in the last 2 years</p>' + radios("about.trips", ["0", "1", "2 to 3", "4 or more"]);
     h += '<p class="q">How do you usually plan what to see?</p>' + area("about.habit", "Maps, guidebooks, blogs, asking people, wandering...") + "</div>";
-    h += '<div class="sec"><h3>Try these</h3><p class="hint"><strong>Best on a laptop or computer:</strong> keep the app on the left and these questions open on the right, so you can do each task and answer straight away. On a phone, tap the yellow button to switch between the app and these questions. Do each task on your own without asking for help: if you get stuck, that is exactly what I need to know.</p>';
+    h += '<div class="sec"><h3>Part 2: Five small tasks</h3><p class="intro">For each task: do it in the app, then answer 3 quick questions here. Please try on your own first.</p>';
     TASKS.forEach(function (t, i) {
-      h += '<div class="card" id="pfb-s-' + t.id + '"><div class="q" style="margin-top:0">' + (i + 1) + ". " + esc(t.title) + '</div><p class="hint" style="color:#0F1B2D">' + esc(t.say) + "</p>" +
-        radios("tasks." + t.id + ".status", [{ v: "done", l: "Did it" }, { v: "trouble", l: "Did it, but it was hard" }, { v: "failed", l: "Could not do it" }, { v: "skipped", l: "Skipped" }]) +
-        '<p class="q">How easy was it?</p>' + scale("tasks." + t.id + ".ease", 1, 5, "Very hard", "Very easy") +
-        '<p class="q">Where did you hesitate, get stuck or get surprised?</p><p class="hint">Say what you tapped, what you expected to happen, and what happened instead. For example: "I tapped the search box expecting a map, but a list of cities opened." If it went smoothly, write "No problems".</p>' + area("tasks." + t.id + ".note", "What I tapped / what I expected / what happened") + "</div>";
+      h += '<div class="card" id="pfb-s-' + t.id + '"><div class="q" style="margin-top:0;font-size:17px">Task ' + (i + 1) + " of " + TASKS.length + ": " + esc(t.title) + '</div><p class="todo"><strong>Do this in the app:</strong> ' + esc(t.say) + "</p>" +
+        '<p class="q">1. Could you do it?</p>' + radios("tasks." + t.id + ".status", [{ v: "done", l: "Yes" }, { v: "trouble", l: "Yes, but it was hard" }, { v: "failed", l: "No" }, { v: "skipped", l: "Skipped" }]) +
+        '<p class="q">2. How easy was it?</p>' + scale("tasks." + t.id + ".ease", 1, 5, "Very hard", "Very easy") +
+        '<p class="q">3. Anything confusing? <span class="opt">(optional)</span></p>' + area("tasks." + t.id + ".note", "Write what confused you, or write: No problems") + "</div>";
     });
     h += "</div>";
-    h += '<div class="sec" id="pfb-s-view"><h3>What you think</h3>';
+    h += '<div class="sec" id="pfb-s-view"><h3>Part 3: What you think</h3>';
     h += '<p class="q">How much would this have helped on your last trip?</p>' + scale("r.help", 1, 5, "Not at all", "A lot");
     h += '<p class="q">Would you follow the route it gave you?</p>' + radios("r.follow", [{ v: "asis", l: "Yes, as it is" }, { v: "minor", l: "Yes, with small doubts" }, { v: "check", l: "I would double check" }, { v: "no", l: "No" }]);
     h += '<p class="q">What would make you not trust a route like this?</p>' + area("r.trust", "");
