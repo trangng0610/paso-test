@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><script>window.PASO_CONFIG=Object.assign(window.PASO_CONFIG||{},{"feedbackReplyTo": "trang.nguyenha1997@gmail.com", "feedbackUrl": "https://formspree.io/f/mqppyogo", "feedbackUrl2": "https://formsubmit.co/ajax/trang.nguyenha1997@gmail.com"});</script><script>(function () {
+<!DOCTYPE html><html lang="en"><head><script>window.PASO_CONFIG=Object.assign(window.PASO_CONFIG||{},{"feedbackReplyTo": "trang.nguyenha1997@gmail.com", "feedbackUrl": "https://formspree.io/f/mqppyogo"});</script><script>(function () {
   var errs = [];
   window.addEventListener("error", function (e) { errs.push(String(e.message || e.error || "error")); });
   window.addEventListener("unhandledrejection", function (e) { errs.push(String(e.reason || "rejection")); });
@@ -1490,13 +1490,9 @@ react/cjs/react-jsx-runtime.production.js:
     return o;
   }
   async function deliver(p) {
-    if (CFG.feedbackUrl || CFG.feedbackUrl2) { // one or two form services; success if either accepts it
-      var jobs = [];
-      if (CFG.feedbackUrl) jobs.push(withTimeout(fetch(CFG.feedbackUrl, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(Object.assign({ _subject: "PASO feedback " + p.id.slice(0, 8) }, flat(p), { id: p.id, message: asText(p) })) }), 12000).then(function (f) { if (!f.ok) throw new Error("HTTP " + f.status); return true; }));
-      if (CFG.feedbackUrl2) jobs.push(withTimeout(fetch(CFG.feedbackUrl2, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(Object.assign({ _subject: "PASO feedback " + p.id.slice(0, 8), _captcha: "false", _template: "table" }, flat(p))) }), 12000).then(function (f) { if (!f.ok) throw new Error("HTTP " + f.status); return true; }));
-      var res = await Promise.allSettled(jobs);
-      if (!res.some(function (r) { return r.status === "fulfilled"; })) throw new Error("form services failed");
-      return "form";
+    if (CFG.feedbackUrl) { // a form service that accepts a JSON POST (Formspree)
+      var f = await withTimeout(fetch(CFG.feedbackUrl, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(Object.assign({ _subject: "PASO feedback " + p.id.slice(0, 8) }, flat(p), { id: p.id, message: asText(p) })) }), 12000);
+      if (!f.ok) throw new Error("HTTP " + f.status); return "form";
     }
     if (CFG.feedbackApi != null) { // own server
       var r = await withTimeout(fetch(String(CFG.feedbackApi).replace(/\/$/, "") + "/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) }), 10000);
